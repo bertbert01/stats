@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probability Puzzler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .scenario-options {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .scenario-options button {
+            padding: 10px 0;
+            width: 150px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 100px;
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.9);
+            transition: all 0.3s ease;
+        }
+
+        .scenario-options button:hover {
+            background-color: #45a049;
+        }
+
+        .challenge {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            margin-top: 60px;
+            margin-bottom: 20px;
+        }
+        .options {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .options button {
+            padding: 10px 0;
+            width: 90px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 100px;
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.9);
+            transition: all 0.3s ease;
+        }
+        .timer {
+          margin-top: 30px;
+        }
+        .options button:hover {
+            background-color: #45a049;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .score {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 24px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-height: 70vh;
+            overflow-y: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            animation-name: modalopen;
+            animation-duration: 0.4s;
+        }
+        @keyframes modalopen {
+            from {opacity: 0}
+            to {opacity: 1}
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #player-name {
+            padding: 10px;
+            margin: 10px auto;
+            display: block;
+            width: 200px;
+            border-radius: 100vh;
+            border: 2px solid #ccc;
+            font-size: 16px;
+            text-align: center;
+        }
+        .submit {
+            padding: 10px;
+            margin: 10px auto;
+            display: block;
+            width: auto;
+            border-radius: 15px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            text-align: center;
+        }
+        #leaderboard-table {
+            margin-top: 50px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#leaderboard-table th, #leaderboard-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#leaderboard-table th {
+    background-color: #f2f2f2;
+}
+  .scene {
+    text-align: center;
+    font-size: 16px;
+  }
+  .modal2 {
+    font-size: 18px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50vh;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2)
+  }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+      <button onclick="myModal2()" class="modal2">!</button>
+        <h1>Probability Puzzler</h1>
+        <p class="scene">PLEASE SELECT A SCENARIO:</p>
+        <div class="scenario-options">
+            <button onclick="selectScenario('weather')">Weather Forecast</button>
+            <button onclick="selectScenario('medical')">Medical Diagnosis</button>
+            <button onclick="selectScenario('cards')">Card Game</button>
+        </div>
+        <div id="challenge" class="challenge" style="display: none;">
+            <h2>Challenge:</h2>
+            <p id="question"></p>
+            <div class="options" id="options"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="score" id="score-value">0</div>
+            <div class="timer" id="timer">Time Left: 30</div>
+        </div>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-message"></h2>
+            <p>Your final score is: <span id="final-score"></span></p>
+            <!-- Updated name input with aesthetic style -->
+            <input type="text" id="player-name" placeholder="Enter your name">
+            <button onclick="submitScore()" class="submit">Submit</button>
+            <div id="leaderboard" style="display: none;">
+                <h2>Leaderboard</h2>
+                <ol id="leaderboard-list"></ol>
+            </div>
+        </div>
+    </div>
+  
+  <div id="myModal2" class="modal">
+    <div class="modal-content" style="background-color: #fefefe; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        <span class="close" onclick="closeModal2()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        <h3 style="text-align: center; margin-bottom: 10px; color: #333;">Mechanics</h3>
+        <div style="padding: 20px;">
+            <p style="font-size: 16px; color: #666;">
+                <strong>Game Mechanics:</strong><br>
+                <span style="color: Red;">Selecting a Scenario:</span> Players start by selecting a scenario: Weather Forecast, Medical Diagnosis, or Card Game.<br>
+                <span style="color: Red;">Challenges:</span> Once a scenario is chosen, the player faces a series of challenges related to that scenario.<br>
+                <span style="color: Red;">Answering Questions:</span> Players select an option they believe to be correct. The game checks if the chosen option matches the correct answer.<br>
+                <span style="color: Red;">Scoring:</span> Correct answers earn the player points. Each correct answer adds 10 points to the players score.<br>
+                <span style="color: Red;">Timer:</span> A timer starts for each question, giving players a limited time to answer. If the player doesnt answer within the time limit, the game moves to the next question.<br>
+                <span style="color: Red;">Feedback:</span> After answering, players receive feedback on whether their answer was correct or incorrect.<br>
+                <span style="color: Red;">Game End:</span> The game ends after all questions in the scenario are answered. A modal window appears showing the players final score.<br>
+                <span style="color: Red;">Leaderboard:</span> Players can enter their name and submit their score to the leaderboard. The leaderboard ranks players based on their scores, with higher scores ranked higher.
+                <br><br>
+                <strong>Relation to Conditional Probability:</strong><br>
+                - In each scenario (Weather Forecast, Medical Diagnosis, Card Game), the questions involve scenarios where certain events are dependent on other events.<br>
+                - Players must apply the concept of conditional probability to analyze the given information and calculate the probability of specific outcomes.<br>
+                - By correctly answering the questions, players demonstrate their understanding of conditional probability and their ability to apply it to real-world situations.
+              <h4 style="margin: -20px; margin-top: 40px; margin-bottom: 10px;">Submitted by: NIEBRES, JOBERT C.</h4>
+              <a href="https://bertbert01.github.io/mycontacts/contact.html" style="margin: -20px;">My Socials</a>
+           </p>
+        </div>
+    </div>
+</div>
+
+    <script>
+        let currentScenario = '';
+        let currentQuestion = 0;
+        let score = 0;
+        const leaderboardArray = [];
+
+        const scenarios = {
+            'weather': [
+                { question: "Given that it is sunny, with a 20% chance of rain tomorrow, what is the probability that it will rain?", options: ["0.4", "0.5", "0.8"], answer: "0.5" },
+                { question: "If the probability of rain on any given day is 30%, and it rains, there's a 60% chance it will be cloudy. What is the probability it will be cloudy if it rains?", options: ["0.12", "0.25", "0.18"], answer: "0.18" },
+                { question: "If there is a 40% chance of fog, what is the probability it will be humid if it's foggy?", options: ["0.60", "0.30", "0.50"], answer: "0.60" },
+                { question: "If there's a 50% chance of snow in the winter, and it snows, there's a 70% chance of icy roads. What is the probability of icy roads if it snows??", options: ["0.20", "0.70", "0.60"], answer: "0.70" },
+                { question: "With a 60% chance of wind, what is the probability it will be cold if it's windy?", options: ["0.10", "0.60", "0.50"], answer: "0.60" },
+                { question: "In the summer, there's a 25% chance of thunderstorms, and if there are thunderstorms, there's an 80% chance it's hot. What is the probability of it being hot if there are thunderstorms?", options: ["0.80", "0.20", "0.30"], answer: "0.80" },
+                { question: "Given that it's winter and there's no snow, with a 60% chance of cold weather, what is the probability it's cold?", options: ["0.1", "0.3", "0.6"], answer: "0.6" },
+                { question: "In the spring, there's a 40% chance of rain, and if it doesn't rain, there's a 50% chance it will be windy. What is the probability it will be windy if it doesn't rain?", options: ["0.10", "0.20", "0.50"], answer: "0.50" },
+                { question: "If there's a 70% chance of hot weather, what is the probability it will be sunny?", options: ["0.3", "0.7", "0.5"], answer: "0.7" },
+                { question: "In the fall, there's a 30% chance of fog, and if there's no fog, there's a 50% chance it will be humid. What is the probability it will be humid if there's no fog?", options: ["0.10", "0.20", "0.30"], answer: "0.30" },
+            ],
+            'medical': [
+                { question: "If a patient has a fever, with a 90% chance of having the flu, what is the probability that the patient has the flu?", options: ["0.70", "0.50", "0.90"], answer: "0.90" },
+                { question: "Given that a patient tested positive for a rare disease, with a false positive rate of 5%, and the disease affects 1 in 1000 people, what is the probability that the patient actually has the disease?", options: ["0.01", "0.019", "0.09"], answer: "0.019" },
+                { question: "If a person is a smoker, with a 10% chance of developing lung cancer, what is the probability of them developing lung cancer if they don't smoke?", options: ["0.10", "0.30", "0.50"], answer: "0.10" },
+                { question: "Given that a patient has a rash, with a 30% chance of having an allergic reaction, what is the probability that the patient has an allergic reaction if they have a rash?", options: ["0.10", "0.30", "0.50"], answer: "0.30" },
+                { question: "If a patient has a family history of heart disease, with a 50% chance of inheriting the gene associated with heart disease, what is the probability of them having heart disease if they have the gene?", options: ["0.1", "0.3", "0.5"], answer: "0.5" },
+                { question: "Given that a patient is overweight, with a 40% chance of developing type 2 diabetes, what is the probability of them developing type 2 diabetes if they are not overweight?", options: ["0.6", "0.8", "0.5"], answer: "0.6" },
+                { question: "If a person is exposed to a virus, with a 60% chance of getting sick, what is the probability of them not getting sick if they were not exposed to the virus?", options: ["0.1", "0.4", "0.7"], answer: "0.4" },
+                { question: "Given that a patient has symptoms of depression, with an 80% chance of having clinical depression, what is the probability that the patient doesn't have clinical depression if they don't have the symptoms?", options: ["0.1", "0.2", "0.3"], answer: "0.2" },
+                { question: "If a person has high cholesterol, with a 70% chance of having a heart attack, what is the probability of them having a heart attack if they don't have high cholesterol?", options: ["0.1", "0.2", "0.3"], answer: "0.3" },
+                { question: "Given that a patient has a headache, with a 50% chance of it being a migraine, what is the probability that the patient has a migraine if they don't have a headache?", options: ["0.5", "0.4", "0.3"], answer: "0.5" },
+            ],
+            'cards': [
+                { question: "If you draw a card from a standard deck of 52 cards, what is the probability of drawing a spade?", options: ["0.5", "0.25", "0.75"], answer: "0.25" },
+                { question: "If you draw two cards from a standard deck without replacement, what is the probability that both cards are hearts?", options: ["0.0625", "0.0588", "0.075"], answer: "0.0588" },
+                { question: "Given that you have a standard deck of 52 cards, what is the probability of drawing a face card (jack, queen, or king)?", options: ["0.2308", "0.7501", "1.730"], answer: "0.2308" },
+                { question: "If you draw three cards from a standard deck without replacement, what is the probability that at least one of them is a club?", options: ["0.6435", "0.5265", "0.745"], answer: "0.6435" },
+                { question: "Given that you have a standard deck of 52 cards, what is the probability of drawing a red card?", options: ["0.5", "0.75", "1.0"], answer: "0.5" },
+                { question: "If you draw four cards from a standard deck without replacement, what is the probability that none of them are diamonds?", options: ["0.25", "0.5", "0.75"], answer: "0.25" },
+                { question: "Given that you have a standard deck of 52 cards, what is the probability of drawing a 7 or a king?", options: ["0.2542", "0.3846", "0.510"], answer: "0.3846" },
+                { question: "If you draw five cards from a standard deck without replacement, what is the probability that all of them are spades?", options: ["0.0026", "0.067", "0.0175"], answer: "0.0026" },
+                { question: "Given that you have a standard deck of 52 cards, what is the probability of drawing a black face card (jack, queen, or king)?", options: ["1.0", "0.75", "0.1154"], answer: "0.1154" },
+                { question: "If you draw six cards from a standard deck without replacement, what is the probability that exactly two of them are hearts?", options: ["1.0752", "0.7025", "0.2506"], answer: "0.2506" },
+            ]
+        };
+
+        function selectScenario(scenario) {
+            currentScenario = scenario;
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('score-value').innerText = `${score}`;
+            document.getElementById('challenge').style.display = 'block';
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(timer); // Reset timer
+            timeLeft = timerDuration;
+            startTimer(); // Start timer for new question
+            document.getElementById('question').innerText = scenarios[currentScenario][currentQuestion].question;
+            const options = scenarios[currentScenario][currentQuestion].options;
+            let optionsHtml = '';
+            for (let i = 0; i < options.length; i++) {
+                optionsHtml += `<button onclick="checkAnswer('${options[i]}')">${options[i]}</button>`;
+            }
+            document.getElementById('options').innerHTML = optionsHtml;
+        }
+
+        function checkAnswer(selectedAnswer) {
+            const correctAnswer = scenarios[currentScenario][currentQuestion].answer;
+            let feedback = '';
+            if (selectedAnswer === correctAnswer) {
+                score += 10;
+                document.getElementById('score-value').innerText = `${score}`;
+                feedback = "Correct! You earned 10 points.";
+            } else {
+                feedback = "Incorrect. Please try again.";
+            }
+            document.getElementById('feedback').innerText = feedback;
+            if (currentQuestion < 9) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                openModal();
+            }
+        }
+        
+        function myModal2() {
+    // Get the modal element
+    var modal = document.getElementById("myModal2");
+
+    // Display the modal
+    modal.style.display = "block";
+
+    // You might want to include additional logic here depending on the mechanics of your game
+          
+}
+  function closeModal2() {
+    var modal = document.getElementById("myModal2");
+    modal.style.display = "none";
+}
+
+
+        function openModal() {
+    let modalMessage = "";
+    let modalTextColor = ""; // Adding variable for text color
+    if (score >= 50) {
+        modalMessage = "Congratulations!";
+        modalTextColor = "green"; // Set text color to green for winning message
+    } else {
+        modalMessage = "Lose.";
+        modalTextColor = "red"; // Set text color to red for losing message
+    }
+    const modalMessageElement = document.getElementById("modal-message");
+    modalMessageElement.innerText = modalMessage;
+    modalMessageElement.style.color = modalTextColor; // Apply text color
+    document.getElementById("final-score").innerText = score;
+    document.getElementById("myModal").style.display = "block";
+}
+
+
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        // Timer functionality
+        let timer;
+        const timerDuration = 30;
+        let timeLeft = timerDuration;
+
+        function startTimer() {
+            timer = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            if (timeLeft >= 0) {
+                document.getElementById('timer').innerText = `Time Left: ${timeLeft}`;
+            } else {
+                clearInterval(timer);
+                checkAnswer("");
+            }
+        }
+
+        function submitScore() {
+            const playerName = document.getElementById("player-name").value;
+            if (playerName !== '') {
+                addToLeaderboard(playerName, score);
+                displayLeaderboard();
+            } else {
+                alert("Please enter your name.");
+            }
+        }
+
+        function addToLeaderboard(name, score) {
+            leaderboardArray.push({ name: name, score: score });
+        }
+
+        function displayLeaderboard() {
+    leaderboardArray.sort((a, b) => b.score - a.score);
+
+    const leaderboardTable = document.createElement('table');
+    leaderboardTable.setAttribute('id', 'leaderboard-table');
+    leaderboardTable.innerHTML = `
+        <thead>
+            <tr>
+                <th>Ranking</th>
+                <th>Name</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboard-list">
+        </tbody>
+    `;
+
+    leaderboardArray.forEach((player, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${player.name}</td>
+            <td>${player.score}</td>
+        `;
+        leaderboardTable.querySelector('tbody').appendChild(row);
+    });
+
+    const leaderboardDiv = document.getElementById('leaderboard');
+    leaderboardDiv.innerHTML = '';
+    leaderboardDiv.appendChild(leaderboardTable);
+    leaderboardDiv.style.display = 'block';
+}
+
+    </script>
+</body>
+</html>
