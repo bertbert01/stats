@@ -171,6 +171,32 @@
     border-radius: 50vh;
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2)
   }
+  
+  @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+
+    .fadeIn {
+        animation: fadeIn 0.5s ease;
+    }
+
+    .fadeOut {
+        animation: fadeOut 0.5s ease;
+    }
 
     </style>
 </head>
@@ -291,9 +317,15 @@
         }
 
         function loadQuestion() {
-            clearInterval(timer); // Reset timer
-            timeLeft = timerDuration;
-            startTimer(); // Start timer for new question
+        clearInterval(timer); // Reset timer
+        timeLeft = timerDuration;
+        startTimer(); // Start timer for new question
+
+        // Fade out the current question and options
+        document.getElementById('question').classList.add('fadeOut');
+        document.getElementById('options').classList.add('fadeOut');
+
+        setTimeout(() => {
             document.getElementById('question').innerText = scenarios[currentScenario][currentQuestion].question;
             const options = scenarios[currentScenario][currentQuestion].options;
             let optionsHtml = '';
@@ -301,26 +333,45 @@
                 optionsHtml += `<button onclick="checkAnswer('${options[i]}')">${options[i]}</button>`;
             }
             document.getElementById('options').innerHTML = optionsHtml;
-        }
+
+            // Fade in the new question and options
+            document.getElementById('question').classList.remove('fadeOut');
+            document.getElementById('options').classList.remove('fadeOut');
+            document.getElementById('question').classList.add('fadeIn');
+            document.getElementById('options').classList.add('fadeIn');
+        }, 500); // Wait for fadeOut animation to complete
+    }
 
         function checkAnswer(selectedAnswer) {
-            const correctAnswer = scenarios[currentScenario][currentQuestion].answer;
-            let feedback = '';
-            if (selectedAnswer === correctAnswer) {
-                score += 10;
-                document.getElementById('score-value').innerText = `${score}`;
-                feedback = "Correct! You earned 10 points.";
-            } else {
-                feedback = "Incorrect. Please try again.";
-            }
-            document.getElementById('feedback').innerText = feedback;
-            if (currentQuestion < 9) {
-                currentQuestion++;
-                loadQuestion();
-            } else {
-                openModal();
-            }
+        const correctAnswer = scenarios[currentScenario][currentQuestion].answer;
+        let feedback = '';
+        let feedbackColor = '';
+
+        if (selectedAnswer === correctAnswer) {
+            score += 10;
+            feedback = "Correct! You earned 10 points.";
+            feedbackColor = 'green';
+        } else {
+            feedback = "Incorrect. Please try again.";
+            feedbackColor = 'red';
         }
+
+        document.getElementById('feedback').innerText = feedback;
+        document.getElementById('feedback').style.color = feedbackColor;
+        document.getElementById('feedback').classList.remove('fadeOut');
+        void document.getElementById('feedback').offsetWidth; // Trigger reflow
+        document.getElementById('feedback').classList.add('fadeIn');
+
+        document.getElementById('score-value').innerText = `${score}`;
+
+          // Move to the next question or end the game
+        if (currentQuestion < 9) {
+            currentQuestion++;
+            loadQuestion();
+        } else {
+            openModal();
+        }
+    }
         
         function myModal2() {
     // Get the modal element
@@ -425,6 +476,58 @@
     leaderboardDiv.appendChild(leaderboardTable);
     leaderboardDiv.style.display = 'block';
 }
+  
+  // server.js
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Connect to MongoDB database
+mongoose.connect('mongodb://localhost:27017/leaderboard', { useNewUrlParser: true, useUnifiedTopology: true });
+const db = mongoose.connection;
+
+// Define leaderboard schema
+const leaderboardSchema = new mongoose.Schema({
+    name: String,
+    score: Number
+});
+
+const Leaderboard = mongoose.model('Leaderboard', leaderboardSchema);
+
+app.use(bodyParser.json());
+
+// API endpoint to add a new score to the leaderboard
+app.post('/leaderboard', (req, res) => {
+    const { name, score } = req.body;
+    const newScore = new Leaderboard({ name, score });
+    newScore.save((err) => {
+        if (err) {
+            res.status(500).send('Error saving score to leaderboard');
+        } else {
+            res.status(200).send('Score added to leaderboard');
+        }
+    });
+});
+
+// API endpoint to get the leaderboard data
+app.get('/leaderboard', (req, res) => {
+    Leaderboard.find({}, (err, scores) => {
+        if (err) {
+            res.status(500).send('Error retrieving leaderboard data');
+        } else {
+            res.json(scores);
+        }
+    });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+
 
     </script>
 </body>
