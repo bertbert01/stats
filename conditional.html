@@ -166,8 +166,10 @@
   }
   .modal2 {
     font-size: 18px;
+    color: Red;
     width: 25px;
     height: 25px;
+    border: 2px Solid Red;
     border-radius: 50vh;
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2)
   }
@@ -197,6 +199,31 @@
     .fadeOut {
         animation: fadeOut 0.5s ease;
     }
+  
+  table {
+    border-collapse: collapse;
+    margin-left: -20px;
+    margin-top: 50px;
+    width: 307px;
+    height: 100px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  }
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
 
     </style>
 </head>
@@ -241,7 +268,7 @@
         <h3 style="text-align: center; margin-bottom: 10px; color: #333;">Mechanics</h3>
         <div style="padding: 20px;">
             <p style="font-size: 16px; color: #666;">
-                <strong>Game Mechanics:</strong><br>
+                <strong style="margin-left: -20px;">Game Mechanics:</strong><br><br>
                 <span style="color: Red;">Selecting a Scenario:</span> Players start by selecting a scenario: Weather Forecast, Medical Diagnosis, or Card Game.<br>
                 <span style="color: Red;">Challenges:</span> Once a scenario is chosen, the player faces a series of challenges related to that scenario.<br>
                 <span style="color: Red;">Answering Questions:</span> Players select an option they believe to be correct. The game checks if the chosen option matches the correct answer.<br>
@@ -250,14 +277,30 @@
                 <span style="color: Red;">Feedback:</span> After answering, players receive feedback on whether their answer was correct or incorrect.<br>
                 <span style="color: Red;">Game End:</span> The game ends after all questions in the scenario are answered. A modal window appears showing the players final score.<br>
                 <span style="color: Red;">Leaderboard:</span> Players can enter their name and submit their score to the leaderboard. The leaderboard ranks players based on their scores, with higher scores ranked higher.
-                <br><br>
-                <strong>Relation to Conditional Probability:</strong><br>
+                <br><br><br>
+                <strong style="margin-left: -20px;">Relation to Conditional Probability:</strong><br><br>
                 - In each scenario (Weather Forecast, Medical Diagnosis, Card Game), the questions involve scenarios where certain events are dependent on other events.<br>
                 - Players must apply the concept of conditional probability to analyze the given information and calculate the probability of specific outcomes.<br>
                 - By correctly answering the questions, players demonstrate their understanding of conditional probability and their ability to apply it to real-world situations.
-              <h4 style="margin: -20px; margin-top: 40px; margin-bottom: 10px;">Submitted by: NIEBRES, JOBERT C.</h4>
-              <a href="https://bertbert01.github.io/mycontacts/contact.html" style="margin: -20px;">My Socials</a>
-           </p>
+              <table>
+  <tr>
+    <th style="text-align: center;">Submitted by</th>
+    <th style="text-align: center;">Contact</th>
+  </tr>
+  <tr>
+    <td>Niebres, Jobert C.</td>
+    <td style="text-align: center;"><a href="https://bertbert01.github.io/mycontacts/contact.html">My Socials</a></td>
+  </tr>
+  <tr>
+    <td>Masapol, Janice A.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Barbonio, Rommel E.</td>
+    <td style="text-align: center;">09709458187</td>
+  </tr>
+</table>
+            </p>
         </div>
     </div>
 </div>
@@ -413,7 +456,7 @@
 
         // Timer functionality
         let timer;
-        const timerDuration = 30;
+        const timerDuration = 60;
         let timeLeft = timerDuration;
 
         function startTimer() {
